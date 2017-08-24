@@ -28,5 +28,12 @@ interface TaxedProductPriceCalculatorInterface
      * @param bool $withTax
      * @return int
      */
+    public function getDiscount(PurchasableInterface $product, $withTax = true);
+
+    /**
+     * @param PurchasableInterface $product
+     * @param bool $withTax
+     * @return int
+     */
     public function getRetailPrice(PurchasableInterface $product, $withTax = true);
 }
