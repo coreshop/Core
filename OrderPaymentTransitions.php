@@ -10,20 +10,16 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
-namespace CoreShop\Component\Core\Model;
+namespace CoreShop\Component\Core;
 
-use CoreShop\Component\Order\Model\OrderInterface as BaseOrderInterface;
-use CoreShop\Component\Shipping\Model\CarrierAwareInterface;
-
-interface OrderInterface extends BaseOrderInterface, CarrierAwareInterface
+final class OrderPaymentTransitions
 {
-    /**
-     * @return string
-     */
-    public function getPaymentState();
+    const IDENTIFIER = 'coreshop_order_payment';
 
-    /**
-     * @param string $paymentState
-     */
-    public function setPaymentState($paymentState);
+    const TRANSITION_REQUEST_PAYMENT = 'request_payment';
+    const TRANSITION_PARTIALLY_PAY = 'partially_pay';
+    const TRANSITION_CANCEL = 'cancel';
+    const TRANSITION_PAY = 'pay';
+    const TRANSITION_PARTIALLY_REFUND = 'partially_refund';
+    const TRANSITION_REFUND = 'refund';
 }
