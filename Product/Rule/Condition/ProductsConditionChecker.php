@@ -10,17 +10,18 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
-namespace CoreShop\Component\Core\Cart\Rule\Condition;
+namespace CoreShop\Component\Core\Product\Rule\Condition;
 
+use CoreShop\Component\Core\Model\StoreInterface;
 use CoreShop\Component\Core\Repository\ProductVariantRepositoryInterface;
 use CoreShop\Component\Core\Rule\Condition\ProductVariantsCheckerTrait;
-use CoreShop\Component\Order\Cart\Rule\Condition\AbstractConditionChecker;
-use CoreShop\Component\Order\Model\CartInterface;
-use CoreShop\Component\Order\Model\CartPriceRuleInterface;
-use CoreShop\Component\Order\Model\CartPriceRuleVoucherCodeInterface;
 use CoreShop\Component\Product\Model\ProductInterface;
+use CoreShop\Component\Resource\Model\ResourceInterface;
+use CoreShop\Component\Rule\Condition\ConditionCheckerInterface;
+use CoreShop\Component\Rule\Model\RuleInterface;
+use Webmozart\Assert\Assert;
 
-final class ProductsConditionChecker extends AbstractConditionChecker
+class ProductsConditionChecker implements ConditionCheckerInterface
 {
     use ProductVariantsCheckerTrait {
         ProductVariantsCheckerTrait::__construct as private __traitConstruct;
@@ -37,20 +38,16 @@ final class ProductsConditionChecker extends AbstractConditionChecker
     /**
      * {@inheritdoc}
      */
-    public function isCartRuleValid(CartInterface $cart, CartPriceRuleInterface $cartPriceRule, ?CartPriceRuleVoucherCodeInterface $voucher, array $configuration)
+    public function isValid(ResourceInterface $subject, RuleInterface $rule, array $configuration, $params = [])
     {
-        $productIdsToCheck = $this->getProductsToCheck($configuration['products'], $cart->getStore(), $configuration['include_variants'] ?: false);
+        Assert::isInstanceOf($subject, ProductInterface::class);
 
-        foreach ($cart->getItems() as $item) {
-            $product = $item->getProduct();
-
-            if ($product instanceof ProductInterface) {
-                if (in_array($product->getId(), $productIdsToCheck)) {
-                    return true;
-                }
-            }
+        if (!array_key_exists('store', $params) || !$params['store'] instanceof StoreInterface) {
+            return false;
         }
 
-        return false;
+        $productIdsToCheck = $this->getProductsToCheck($configuration['products'], $params['store'], $configuration['include_variants'] ?: false);
+
+        return in_array($subject->getId(), $productIdsToCheck);
     }
 }
