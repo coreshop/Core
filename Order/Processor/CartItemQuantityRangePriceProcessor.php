@@ -14,14 +14,14 @@ namespace CoreShop\Component\Core\Order\Processor;
 
 use CoreShop\Component\Core\Model\CartItemInterface;
 use CoreShop\Component\Core\Model\StoreInterface;
-use CoreShop\Component\Core\TierPricing\Rule\Calculator\ProductTierPriceCalculatorInterface;
+use CoreShop\Component\Core\ProductQuantityPriceRules\Rule\Calculator\ProductQuantityRangePriceCalculatorInterface;
 use CoreShop\Component\Order\Calculator\PurchasableCalculatorInterface;
 use CoreShop\Component\Order\Model\CartInterface;
 use CoreShop\Component\Order\Processor\CartProcessorInterface;
 use CoreShop\Component\Order\Processor\CartItemProcessorInterface;
 use Webmozart\Assert\Assert;
 
-class CartItemTierPriceProcessor implements CartProcessorInterface
+class CartItemQuantityRangePriceProcessor implements CartProcessorInterface
 {
     /**
      * @var CartItemsProcessor
@@ -34,9 +34,9 @@ class CartItemTierPriceProcessor implements CartProcessorInterface
     protected $productPriceCalculator;
 
     /**
-     * @var ProductTierPriceCalculatorInterface
+     * @var ProductQuantityRangePriceCalculatorInterface
      */
-    protected $productTierPriceCalculator;
+    protected $productQuantityRangePriceCalculator;
 
     /**
      * @var CartItemProcessorInterface
@@ -44,20 +44,20 @@ class CartItemTierPriceProcessor implements CartProcessorInterface
     protected $cartItemProcessor;
 
     /**
-     * @param CartProcessorInterface              $innerCartProcessor
-     * @param PurchasableCalculatorInterface      $productPriceCalculator
-     * @param CartItemProcessorInterface          $cartItemProcessor
-     * @param ProductTierPriceCalculatorInterface $productTierPriceCalculator
+     * @param CartProcessorInterface                       $innerCartProcessor
+     * @param PurchasableCalculatorInterface               $productPriceCalculator
+     * @param CartItemProcessorInterface                   $cartItemProcessor
+     * @param ProductQuantityRangePriceCalculatorInterface $productQuantityRangePriceCalculator
      */
     public function __construct(
         CartProcessorInterface $innerCartProcessor,
         PurchasableCalculatorInterface $productPriceCalculator,
-        ProductTierPriceCalculatorInterface $productTierPriceCalculator,
+        ProductQuantityRangePriceCalculatorInterface $productQuantityRangePriceCalculator,
         CartItemProcessorInterface $cartItemProcessor
     ) {
         $this->innerCartProcessor = $innerCartProcessor;
         $this->productPriceCalculator = $productPriceCalculator;
-        $this->productTierPriceCalculator = $productTierPriceCalculator;
+        $this->productQuantityRangePriceCalculator = $productQuantityRangePriceCalculator;
         $this->cartItemProcessor = $cartItemProcessor;
     }
 
@@ -74,11 +74,11 @@ class CartItemTierPriceProcessor implements CartProcessorInterface
         Assert::isInstanceOf($store, StoreInterface::class);
 
         $context = [
-            'store' => $store,
+            'store'    => $store,
             'customer' => $cart->getCustomer() ?: null,
             'currency' => $cart->getCurrency(),
-            'country' => $store->getBaseCountry(),
-            'cart' => $cart,
+            'country'  => $store->getBaseCountry(),
+            'cart'     => $cart,
         ];
 
         /**
@@ -86,12 +86,12 @@ class CartItemTierPriceProcessor implements CartProcessorInterface
          */
         foreach ($cart->getItems() as $item) {
             $realItemPrice = $this->productPriceCalculator->getPrice($item->getProduct(), $context, true);
-            $tierItemPrice = $this->productTierPriceCalculator->getTierPriceForCartItem($item->getProduct(), $item, $context);
+            $rangeItemPrice = $this->productQuantityRangePriceCalculator->getQuantityRangePriceForCartItem($item->getProduct(), $item, $context);
 
-            if ($tierItemPrice === false) {
+            if ($rangeItemPrice === false) {
                 $itemPrice = $realItemPrice;
             } else {
-                $itemPrice = $tierItemPrice;
+                $itemPrice = $rangeItemPrice;
             }
 
             $itemPriceWithoutDiscount = $this->productPriceCalculator->getPrice($item->getProduct(), $context);

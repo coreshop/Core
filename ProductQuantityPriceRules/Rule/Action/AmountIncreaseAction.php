@@ -10,16 +10,16 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
-namespace CoreShop\Component\Core\TierPricing\Rule\Action;
+namespace CoreShop\Component\Core\ProductQuantityPriceRules\Rule\Action;
 
 use CoreShop\Component\Core\Model\CurrencyInterface;
 use CoreShop\Component\Currency\Converter\CurrencyConverterInterface;
-use CoreShop\Component\TierPricing\Model\ProductTierPriceRangeInterface;
-use CoreShop\Component\TierPricing\Model\TierPriceAwareInterface;
-use CoreShop\Component\TierPricing\Rule\Action\TierPriceActionInterface;
+use CoreShop\Component\ProductQuantityPriceRules\Model\QuantityRangeInterface;
+use CoreShop\Component\ProductQuantityPriceRules\Model\QuantityRangePriceAwareInterface;
+use CoreShop\Component\ProductQuantityPriceRules\Rule\Action\ProductQuantityPriceRuleActionInterface;
 use Webmozart\Assert\Assert;
 
-class AmountDecreaseAction implements TierPriceActionInterface
+class AmountIncreaseAction implements ProductQuantityPriceRuleActionInterface
 {
     /**
      * @var CurrencyConverterInterface
@@ -37,16 +37,16 @@ class AmountDecreaseAction implements TierPriceActionInterface
     /**
      * {@inheritdoc}
      */
-    public function calculate(ProductTierPriceRangeInterface $range, TierPriceAwareInterface $subject, int $realItemPrice, array $context)
+    public function calculate(QuantityRangeInterface $range, QuantityRangePriceAwareInterface $subject, int $realItemPrice, array $context)
     {
         /**
-         * @var \CoreShop\Component\Core\Model\ProductTierPriceRangeInterface $range
+         * @var \CoreShop\Component\Core\Model\QuantityRangeInterface $range
          */
-        Assert::isInstanceOf($range, \CoreShop\Component\Core\Model\ProductTierPriceRangeInterface::class);
+        Assert::isInstanceOf($range, \CoreShop\Component\Core\Model\QuantityRangeInterface::class);
         Assert::isInstanceOf($range->getCurrency(), CurrencyInterface::class);
         $currentContextCurrency = $context['currency'];
         $currencyAwareAmount = $this->currencyConverter->convert($range->getAmount(), $range->getCurrency()->getIsoCode(), $currentContextCurrency->getIsoCode());
 
-        return max($realItemPrice - $currencyAwareAmount, 0);
+        return $realItemPrice + $currencyAwareAmount;
     }
 }

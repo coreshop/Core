@@ -12,9 +12,9 @@
 
 namespace CoreShop\Component\Core\Model;
 
-use CoreShop\Component\TierPricing\Model\ProductTierPriceRange as BaseProductTierPriceRange;
+use CoreShop\Component\ProductQuantityPriceRules\Model\QuantityRange as BaseQuantityRange;
 
-class ProductTierPriceRange extends BaseProductTierPriceRange implements ProductTierPriceRangeInterface
+class QuantityRange extends BaseQuantityRange implements QuantityRangeInterface
 {
     /**
      * @var int
