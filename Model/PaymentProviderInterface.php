@@ -19,16 +19,6 @@ use CoreShop\Component\Store\Model\StoresAwareInterface;
 interface PaymentProviderInterface extends BasePaymentProviderInterface, StoresAwareInterface
 {
     /**
-     * @param GatewayConfig $gatewayConfig
-     */
-    public function setGatewayConfig(GatewayConfig $gatewayConfig);
-
-    /**
-     * @return GatewayConfig
-     */
-    public function getGatewayConfig();
-
-    /**
      * @return \Pimcore\Model\Asset|null
      */
     public function getLogo();
