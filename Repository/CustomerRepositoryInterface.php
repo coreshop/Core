@@ -10,12 +10,16 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
-namespace CoreShop\Component\Core\Model;
+namespace CoreShop\Component\Core\Repository;
 
-use CoreShop\Component\Order\Model\QuoteInterface as BaseQuoteInterface;
-use CoreShop\Component\Shipping\Model\CarrierAwareInterface;
-use CoreShop\Component\User\Model\UserAwareInterface;
+use CoreShop\Component\Core\Model\CustomerInterface;
+use CoreShop\Component\Customer\Repository\CustomerRepositoryInterface as BaseCustomerRepositoryInterface;
 
-interface QuoteInterface extends BaseQuoteInterface, CarrierAwareInterface, UserAwareInterface
+interface CustomerRepositoryInterface extends BaseCustomerRepositoryInterface
 {
+    /**
+     * @param string $email
+     * @return CustomerInterface|null
+     */
+    public function findOneByEmailWithoutUser(string $email);
 }

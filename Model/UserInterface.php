@@ -12,10 +12,10 @@
 
 namespace CoreShop\Component\Core\Model;
 
-use CoreShop\Component\Order\Model\QuoteInterface as BaseQuoteInterface;
-use CoreShop\Component\Shipping\Model\CarrierAwareInterface;
-use CoreShop\Component\User\Model\UserAwareInterface;
+use CoreShop\Component\Customer\Model\CustomerAwareInterface;
+use CoreShop\Component\User\Model\UserInterface as BaseUserInterface;
 
-interface QuoteInterface extends BaseQuoteInterface, CarrierAwareInterface, UserAwareInterface
+interface UserInterface extends BaseUserInterface, CustomerAwareInterface
 {
+
 }
