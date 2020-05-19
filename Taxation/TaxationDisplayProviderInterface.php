@@ -10,25 +10,15 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
-namespace CoreShop\Component\Core\Model;
+declare(strict_types=1);
 
-use CoreShop\Component\Resource\Exception\ImplementedByPimcoreException;
+namespace CoreShop\Component\Core\Taxation;
 
-trait SaleTrait
+interface TaxationDisplayProviderInterface
 {
     /**
-     * {@inheritdoc}
+     * @param array $context
+     * @return bool
      */
-    public function getWeight()
-    {
-        throw new ImplementedByPimcoreException(__CLASS__, __METHOD__);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setWeight($weight)
-    {
-        throw new ImplementedByPimcoreException(__CLASS__, __METHOD__);
-    }
+    public function displayWithTax(array $context): bool;
 }

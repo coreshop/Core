@@ -10,11 +10,14 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
-namespace CoreShop\Component\Core\Model;
+declare(strict_types=1);
 
-use CoreShop\Component\Order\Model\QuoteInterface as BaseQuoteInterface;
-use CoreShop\Component\Shipping\Model\CarrierAwareInterface;
+namespace CoreShop\Component\Core\Taxation;
 
-interface QuoteInterface extends BaseQuoteInterface, CarrierAwareInterface
+class DefaultTaxationDisplayProvider implements TaxationDisplayProviderInterface
 {
+    public function displayWithTax(array $context): bool
+    {
+        return true;
+    }
 }
