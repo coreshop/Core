@@ -10,12 +10,14 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
-namespace CoreShop\Component\Core\Model;
+declare(strict_types=1);
 
-use CoreShop\Component\Order\Model\QuoteItem as BaseQuoteItem;
+namespace CoreShop\Component\Core\Taxation;
 
-class QuoteItem extends BaseQuoteItem implements QuoteItemInterface
+class DefaultTaxationDisplayProvider implements TaxationDisplayProviderInterface
 {
-    use ProposalItemTrait;
-    use SaleItemTrait;
+    public function displayWithTax(array $context): bool
+    {
+        return true;
+    }
 }

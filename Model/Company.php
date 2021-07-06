@@ -10,12 +10,14 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
+declare(strict_types=1);
+
 namespace CoreShop\Component\Core\Model;
 
-use CoreShop\Component\Order\Model\QuoteInterface as BaseQuoteInterface;
-use CoreShop\Component\Shipping\Model\CarrierAwareInterface;
-use CoreShop\Component\User\Model\UserAwareInterface;
+use CoreShop\Component\Address\Model\AddressesAwareTrait;
+use CoreShop\Component\Customer\Model\Company as BaseCompany;
 
-interface QuoteInterface extends BaseQuoteInterface, CarrierAwareInterface, UserAwareInterface
+abstract class Company extends BaseCompany implements CompanyInterface
 {
+    use AddressesAwareTrait;
 }

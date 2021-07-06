@@ -12,8 +12,16 @@
 
 namespace CoreShop\Component\Core\Model;
 
-use CoreShop\Component\Order\Model\QuoteItemInterface as BaseQuoteItemInterface;
-
-interface QuoteItemInterface extends BaseQuoteItemInterface, SaleItemInterface
+interface PimcoreStoresAwareInterface
 {
+    /**
+     * @return StoreInterface[]
+     */
+
+    public function getStores(): ?array;
+
+    /**
+     * @param StoreInterface[] $stores
+     */
+    public function setStores(array $stores);
 }

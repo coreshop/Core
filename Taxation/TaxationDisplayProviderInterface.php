@@ -10,19 +10,15 @@
  * @license    https://www.coreshop.org/license     GNU General Public License version 3 (GPLv3)
  */
 
-namespace CoreShop\Component\Core\Model;
+declare(strict_types=1);
 
-use CoreShop\Component\Order\Model\SaleInterface as BaseSaleInterface;
+namespace CoreShop\Component\Core\Taxation;
 
-interface SaleInterface extends BaseSaleInterface
+interface TaxationDisplayProviderInterface
 {
     /**
-     * @param float $weight
+     * @param array $context
+     * @return bool
      */
-    public function setWeight($weight);
-
-    /**
-     * @return float
-     */
-    public function getWeight();
+    public function displayWithTax(array $context): bool;
 }
