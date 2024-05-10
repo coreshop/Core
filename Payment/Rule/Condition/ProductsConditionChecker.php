@@ -16,21 +16,21 @@ declare(strict_types=1);
  *
  */
 
-namespace CoreShop\Component\Core\Shipping\Rule\Condition;
+namespace CoreShop\Component\Core\Payment\Rule\Condition;
 
-use CoreShop\Component\Address\Model\AddressInterface;
+use CoreShop\Component\Core\Model\OrderInterface;
 use CoreShop\Component\Core\Model\OrderItemInterface;
 use CoreShop\Component\Core\Repository\ProductVariantRepositoryInterface;
 use CoreShop\Component\Core\Rule\Condition\ProductVariantsCheckerTrait;
+use CoreShop\Component\Payment\Model\PayableInterface;
+use CoreShop\Component\Payment\Model\PaymentProviderInterface;
+use CoreShop\Component\Payment\Rule\Condition\AbstractConditionChecker;
 use CoreShop\Component\Product\Model\ProductInterface;
-use CoreShop\Component\Shipping\Model\CarrierInterface;
-use CoreShop\Component\Shipping\Model\ShippableInterface;
-use CoreShop\Component\Shipping\Rule\Condition\AbstractConditionChecker;
 use CoreShop\Component\Store\Model\StoreAwareInterface;
 
 class ProductsConditionChecker extends AbstractConditionChecker
 {
-    public const SHIPPING_RULE_RECURSIVE_VARIANT_CACHE_TAG = 'cs_shipping_rule_recursive_variant';
+    public const PAYMENT_PROVIDER_RULE_RECURSIVE_VARIANT_CACHE_TAG = 'cs_payment_provider_rule_recursive_variant';
 
     use ProductVariantsCheckerTrait {
         ProductVariantsCheckerTrait::__construct as private __traitConstruct;
@@ -42,24 +42,26 @@ class ProductsConditionChecker extends AbstractConditionChecker
         $this->__traitConstruct($productRepository);
     }
 
-    public function isShippingRuleValid(
-        CarrierInterface $carrier,
-        ShippableInterface $shippable,
-        AddressInterface $address,
+    public function isPaymentProviderRuleValid(
+        PaymentProviderInterface $paymentProvider,
+        PayableInterface $payable,
         array $configuration,
     ): bool {
-        if (!$shippable instanceof StoreAwareInterface) {
+        if (!$payable instanceof StoreAwareInterface) {
             return false;
         }
 
         $productIdsToCheck = $this->getProductsToCheck(
             $configuration['products'],
-            $shippable->getStore(),
+            $payable->getStore(),
             $configuration['include_variants'] ?: false,
-            [self::SHIPPING_RULE_RECURSIVE_VARIANT_CACHE_TAG],
+            [self::PAYMENT_PROVIDER_RULE_RECURSIVE_VARIANT_CACHE_TAG],
         );
 
-        $cartItems = $shippable->getItems();
+        if (!$payable instanceof OrderInterface) {
+            return false;
+        }
+        $cartItems = $payable->getItems();
 
         foreach ($cartItems as $item) {
             if ($item instanceof OrderItemInterface && $item->getIsGiftItem()) {
