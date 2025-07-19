@@ -5,13 +5,14 @@ declare(strict_types=1);
 /*
  * CoreShop
  *
- * This source file is available under the terms of the
- * CoreShop Commercial License (CCL)
+ * This source file is available under two different licenses:
+ *  - GNU General Public License version 3 (GPLv3)
+ *  - CoreShop Commercial License (CCL)
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
  * @copyright  Copyright (c) CoreShop GmbH (https://www.coreshop.com)
- * @license    CoreShop Commercial License (CCL)
+ * @license    https://www.coreshop.com/license     GPLv3 and CCL
  *
  */
 
@@ -22,11 +23,9 @@ use CoreShop\Component\Core\Model\ProductInterface;
 use CoreShop\Component\Index\Extension\IndexColumnsExtensionInterface;
 use CoreShop\Component\Index\Model\IndexableInterface;
 use CoreShop\Component\Index\Model\IndexInterface;
-use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Types\Type;
-use CoreShop\Component\Index\Worker\MysqlWorkerInterface;
+use CoreShop\Component\Index\Worker\OpenSearchWorkerInterface;
 
-final class ProductClassExtension implements IndexColumnsExtensionInterface
+final class OpenSearchProductClassExtension implements IndexColumnsExtensionInterface
 {
     public function __construct(
         private string $productClassName,
@@ -35,15 +34,15 @@ final class ProductClassExtension implements IndexColumnsExtensionInterface
 
     public function supports(IndexInterface $index): bool
     {
-        return $this->productClassName === $index->getClass() && $index->getWorker() === 'mysql';
+        return $this->productClassName === $index->getClass() && $index->getWorker() === 'opensearch';
     }
 
     public function getSystemColumns(): array
     {
         return [
-            (new Column('categoryIds', Type::getType('string')))->setLength(255),
-            (new Column('parentCategoryIds', Type::getType('string')))->setLength(255),
-            (new Column('stores', Type::getType('string')))->setLength(255),
+            'categoryIds' => OpenSearchWorkerInterface::FIELD_TYPE_INTEGER,
+            'parentCategoryIds' => OpenSearchWorkerInterface::FIELD_TYPE_INTEGER,
+            'stores' => OpenSearchWorkerInterface::FIELD_TYPE_INTEGER,
         ];
     }
 
@@ -74,14 +73,17 @@ final class ProductClassExtension implements IndexColumnsExtensionInterface
             }
 
             /**
-             * @psalm-suppress InvalidArgument
+             * @var int[]|string[] $stores
              */
-            $stores = @implode(',', $indexable->getStores() ?? []);
+            $stores = $indexable->getStores() ?? [];
+            $stores = array_map(static function (int|string $storeId) {
+                return (int) $storeId;
+            }, $stores);
 
             return [
-                'categoryIds' => ',' . implode(',', $categoryIds) . ',',
-                'parentCategoryIds' => ',' . implode(',', $parentCategoryIds) . ',',
-                'stores' => ',' . $stores . ',',
+                'categoryIds' => array_values($categoryIds),
+                'parentCategoryIds' => $parentCategoryIds,
+                'stores' => $stores,
             ];
         }
 
